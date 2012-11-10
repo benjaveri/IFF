@@ -1,0 +1,24 @@
+architecture
+
+block diagram
+
+core:
+ basic object interfaces
+ object interaction logic
+ rules/constraints
+ observation apis (i.e. what is visible, can i go somewhere, etc)
+ natural language parser, compiler, executor
+ game state manager (serialized/atomic/etc)
+
+universe:
+ idea is that the same server+core can run many different games defined in different universes
+ game objects (expressed as scala objects)
+ state initialization
+ custom game rules
+
+server:
+ uses core
+ uses universe
+ web server user interface
+ player administration
+

@@ -1,0 +1,89 @@
+package com.bronzecastle.iff.core.model
+
+import collection.mutable.{ArrayBuffer => MutableArrayBuffer}
+import java.sql.{ResultSet, SQLException}
+
+/**
+ * logical connection to database
+ */
+class Connection(val directConnection: java.sql.Connection) {
+  def commit() {
+    directConnection.commit()
+  }
+
+  def close() {
+    directConnection.close()
+  }
+
+  protected def prepareStatement(stmt: String,args: Seq[Any]) = {
+    val ps = directConnection.prepareStatement(stmt)
+    for (i <- 0 until args.length) {
+      args(i) match {
+        case n: Int => ps.setInt(i+1,n)
+        case n: Long => ps.setLong(i+1,n)
+        case s: String => ps.setString(i+1,s)
+      }
+    }
+    ps
+  }
+
+  def executeStatement(stmt: String,args: Any*) = {
+    prepareStatement(stmt,args).execute()
+  }
+
+  def executeQuery[T](stmt: String,args: Any*): ResultSet = {
+    prepareStatement(stmt,args).executeQuery()
+  }
+
+  def executeUpdate(stmt: String,args: Any*) = {
+    prepareStatement(stmt,args).executeUpdate()
+  }
+
+  def querySingle[T](f: (ResultSet)=>T): (String)=>Option[T] = {
+    (stmt: String) => {
+      val rs = executeQuery(stmt)
+      if (rs.next()) Some(f(rs)) else None
+    }
+  }
+
+  def querySingleWithArgs[T](f: (ResultSet)=>T): (String,Seq[Any])=>Option[T] = {
+    (stmt: String,args: Seq[Any]) => {
+      val rs = executeQuery(stmt,args:_*)
+      if (rs.next()) Some(f(rs)) else None
+    }
+  }
+
+  def queryMany[T](f: (ResultSet)=>T): (String)=>Iterator[T] = {
+    (stmt: String) => {
+      val rs = executeQuery(stmt)
+      new Iterator[T] {
+        def hasNext = rs.next()
+        def next() = f(rs)
+      }
+    }
+  }
+
+  def queryManyWithArgs[T](f: (ResultSet)=>T): (String,Seq[Any])=>Iterator[T] = {
+    (stmt: String,args: Seq[Any]) => {
+      val rs = executeQuery(stmt,args:_*)
+      new Iterator[T] {
+        def hasNext = rs.next()
+        def next() = f(rs)
+      }
+    }
+  }
+}
+
+object Connection {
+  protected val tls = new InheritableThreadLocal[Connection]()
+
+  def setCurrent(conn: Connection) { tls.set(conn) }
+  def apply() = tls.get()
+
+  object QueryConvertions {
+    def asInt(rs: ResultSet): Int = rs.getInt(1)
+    def asLong(rs: ResultSet): Long = rs.getLong(1)
+    def asString(rs: ResultSet): String = rs.getString(1)
+    def asIntStringString(rs: ResultSet): (Int,String,String) = (rs.getInt(1),rs.getString(2),rs.getString(3))
+  }
+}
