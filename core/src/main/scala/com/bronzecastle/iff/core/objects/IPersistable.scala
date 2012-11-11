@@ -15,15 +15,18 @@ import java.util.concurrent.ConcurrentHashMap
 
 trait IPersistable {
   // persistence: row id and generation number
-  private var gen = -1L
-  def getGenerationNumber = gen
-  def setGenerationNumber(g: Long) { gen = g }
+  var gen = -1L
 
   // required instance name
-  def index(): String
+  def index(): String = getClass.getSimpleName
+
+  // serialization triggers
+  def triggerAboutToSerialize() {}
+  def triggetJustDeserialized() {}
 
   // serialization
   def serialize(os: OutputStream) {
+    triggerAboutToSerialize()
     val stream = new DataOutputStream(os)
     try {
       // emit class
@@ -60,20 +63,25 @@ trait IPersistable {
 
 object IPersistable {
   // serialization
-  def getInstance(is: InputStream): IPersistable = {
+  def getInstance(is: InputStream,withInstance: IPersistable = null): IPersistable = {
     val stream = new DataInputStream(is)
     try {
-      // read and marshal class
+      // read and marshal class. if withInstance is supplied, ignore the serialized
+      //  class name, and attempt to load directly into it (used for refresh() but can
+      //  also be used to morph between compatible classes)
       var className = stream.readUTF()
       if (CLASS_REMAPPER.contains(className)) className = CLASS_REMAPPER.get(className)
-      val clazz = Class.forName(className)
-      val ob = clazz.newInstance().asInstanceOf[IPersistable]
+      val clazz = if (withInstance != null) withInstance.getClass else Class.forName(className)
+      val ob = if (withInstance != null) withInstance else clazz.newInstance().asInstanceOf[IPersistable]
 
       // load persistent fields
       while (true) {
         // get tag
         val tag = stream.readByte()
-        if (tag == TAG_END) return ob
+        if (tag == TAG_END) {
+          ob.triggetJustDeserialized()
+          return ob
+        }
 
         // read field name
         val fieldname = stream.readUTF()

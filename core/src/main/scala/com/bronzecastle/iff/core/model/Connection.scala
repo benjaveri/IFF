@@ -35,6 +35,7 @@ class Connection(val directConnection: java.sql.Connection) {
         case n: Long => ps.setLong(i+1,n)
         case s: String => ps.setString(i+1,s)
         case b: Blob => ps.setBlob(i+1,b)
+        case x => throw new RuntimeException("Unimplemented type: "+x.getClass.getName)
       }
     }
     ps

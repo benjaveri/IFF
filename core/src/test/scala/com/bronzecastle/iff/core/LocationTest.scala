@@ -27,16 +27,13 @@ class LocationTest {
 }
 
 class RoomA extends IPersistable with ILocation {
-  def index() = "RoomA"
   def shortDesc() = "Room A"
   def fullDesc() = "Room A"
 }
 class RoomB extends IPersistable with ILocation {
-  def index() = "RoomB"
   def shortDesc() = "Room B"
   def fullDesc() = "Room B"
 }
 
 class Observer extends IPersistable with IActor {
-  def index() = "Observer"
 }

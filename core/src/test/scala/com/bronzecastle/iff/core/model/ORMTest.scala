@@ -19,7 +19,7 @@ class ORMTest {
   val LOG = Logger.getLogger(getClass)
 
   @Test
-  def testPersistence() {
+  def testSerialization() {
     val a = new ObjectA
     a.blinkRate = 10
     a.isLocked = false
@@ -43,6 +43,49 @@ class ORMTest {
     assertTrue(o.a==123)
     assertTrue(o.b==0) // b was not marked persistent
   }
+
+  @Test
+  def testPersistence() {
+    val db = new Database("mem:test")
+    ORM.createTables(db)
+
+    val a = new ObjectA
+    a.a = 123
+    assertTrue(ORM.persist(db,a))
+    assertTrue(a.gen == 0)
+    a.a = 456
+    assertTrue(ORM.persist(db,a))
+    assertTrue(a.gen == 1)
+
+    val b = ORM.getInstance(db,a.index()).get.asInstanceOf[ObjectA]
+    assertTrue(b.gen == 1)
+    assertTrue(b.a == 456)
+
+    db.shutdown()
+  }
+
+  @Test
+  def testUpdateContention() {
+    val db = new Database("mem:test")
+    ORM.createTables(db)
+
+    val a = new ObjectA
+    a.a = 123
+    assertTrue(ORM.persist(db,a))
+
+    val b = ORM.getInstance(db,a.index()).get.asInstanceOf[ObjectA]
+    b.a = 456
+    assertTrue(ORM.persist(db,b))
+
+    a.a = 999
+    assertFalse(ORM.persist(db,a))
+    assertTrue(ORM.refresh(db,a))
+    assertTrue(a.a == 456)
+    a.a = 999
+    assertTrue(ORM.persist(db,a))
+
+    db.shutdown()
+  }
 }
 
 trait IBlinkable extends IObject {
@@ -53,8 +96,6 @@ trait IOpenable extends IObject {
   @Persistent var nameOfKey = "gold"
 }
 class ObjectA extends IPersistable with IBlinkable with IOpenable {
-  def index() = "ObjectA"
-
   @Persistent var a = 0L
   var b = 0L
 }
