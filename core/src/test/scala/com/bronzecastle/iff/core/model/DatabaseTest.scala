@@ -5,10 +5,9 @@ import Assert._
 import org.apache.log4j.Logger
 import Connection.QueryConvertions._
 import java.io.File
-import java.sql.SQLException
 
 @Test
-class testDatabase {
+class DatabaseTest {
   val LOG = Logger.getLogger(getClass)
 
   @Test
@@ -34,7 +33,7 @@ class testDatabase {
   @Test
   def testPersistInFile() {
     val dbname = "test"
-    val filename = dbname+".h2.db"
+    val filename = dbname+".h2.db" // what h2 is going to put on disk
     try {
       // create a database in memory
       var db = new Database(dbname)//;TRACE_LEVEL_SYSTEM_OUT=4")
@@ -61,10 +60,9 @@ class testDatabase {
     }
   }
 
+  /*
   @Test
   def testRollbackException() {
-    /*
-
     // create a database in memory
     var db = new Database("mem:test;TRACE_LEVEL_SYSTEM_OUT=4")
     createTables(db)
@@ -80,7 +78,7 @@ class testDatabase {
       val c2 = db.getConnection()
       try {
         c2.executeUpdate("UPDATE prop SET v=? WHERE k=?","x","a")
-        c2.commit()
+        c2.commitTransaction()
       } catch {
         case ex: SQLException => {
 
@@ -97,9 +95,8 @@ class testDatabase {
     assertTrue(r=="111")
 
     db.shutdown()
-    */
   }
-
+  */
 
   //
   // utilties

@@ -99,13 +99,16 @@ class Database(val name: String) {
       while (true) {
         try {
           val t = body
-          conn.commit()
+          conn.commitTransaction()
           return t
         } catch {
           case ex: SQLException => {
             if (ex.getErrorCode == 50200) { // timeout
               // retry transaction
-              LOG.info("Transaction timeout; retry")
+              LOG.info("Transaction timeout; wont retry")
+              // TODO - for now, i believe its best to avoid these cases in my code
+              //  so not going to handle it yet
+              throw ex
             } else {
               throw ex
             }
@@ -120,8 +123,15 @@ class Database(val name: String) {
     } finally {
       Connection.setCurrent(null)
       if (trouble) {
-        // dunno what state connection is in, so just close it
-        resetConnection(conn)
+        try {
+          conn.rollbackTransaction()
+          returnConnection(conn)
+        } catch {
+          case ex2: SQLException => {
+            // dunno what state connection is in, so just close it
+            resetConnection(conn)
+          }
+        }
       } else {
         returnConnection(conn)
       }

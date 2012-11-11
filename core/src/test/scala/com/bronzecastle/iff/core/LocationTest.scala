@@ -6,7 +6,7 @@ import org.junit._
 import Assert._
 
 @Test
-class testLocation {
+class LocationTest {
   class RoomA extends ILocation {
     def shortDesc() = "Room A"
     def fullDesc() = "Room A"

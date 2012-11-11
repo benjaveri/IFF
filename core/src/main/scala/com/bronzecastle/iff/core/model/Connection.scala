@@ -7,8 +7,12 @@ import java.sql.{ResultSet, SQLException}
  * logical connection to database
  */
 class Connection(val directConnection: java.sql.Connection) {
-  def commit() {
+  def commitTransaction() {
     directConnection.commit()
+  }
+
+  def rollbackTransaction() {
+    directConnection.rollback()
   }
 
   def close() {
