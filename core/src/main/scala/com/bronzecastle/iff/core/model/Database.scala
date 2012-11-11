@@ -43,7 +43,18 @@ class Database(val name: String) {
         usePool.remove(conn)
         freePool.add(conn)
       } else {
-        throw new RuntimeException("connection not in use")
+        throw new RuntimeException("Connection not in use")
+      }
+    }
+  }
+
+  def resetConnection(conn: Connection) {
+    lock.synchronized {
+      if (usePool.contains(conn)) {
+        usePool.remove(conn)
+        conn.close()
+      } else {
+        throw new RuntimeException("Connection not in use")
       }
     }
   }
@@ -80,27 +91,40 @@ class Database(val name: String) {
   }
 
   def doTransaction[T](body: =>T): T = {
+    if (Connection() != null) throw new RuntimeException("Transaction already open")
     val conn = getConnection()
+    var trouble = false
     Connection.setCurrent(conn)
     try {
       while (true) {
         try {
-          try {
-            val t = body
-            return t
-          } finally {
-            Connection().commit()
-          }
+          val t = body
+          conn.commit()
+          return t
         } catch {
           case ex: SQLException => {
-            LOG.warn("Exception",ex)
-            throw ex
+            if (ex.getErrorCode == 50200) { // timeout
+              // retry transaction
+              LOG.info("Transaction timeout; retry")
+            } else {
+              throw ex
+            }
           }
         }
       }
+    } catch {
+      case ex: Exception => {
+        trouble = true
+        throw ex
+      }
     } finally {
       Connection.setCurrent(null)
-      returnConnection(conn)
+      if (trouble) {
+        // dunno what state connection is in, so just close it
+        resetConnection(conn)
+      } else {
+        returnConnection(conn)
+      }
     }
     throw new RuntimeException("Unreachable code reached!")
   }

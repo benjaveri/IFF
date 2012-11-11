@@ -4,25 +4,20 @@ import org.junit._
 import Assert._
 import org.apache.log4j.Logger
 import Connection.QueryConvertions._
+import java.io.File
+import java.sql.SQLException
 
 @Test
 class testDatabase {
   val LOG = Logger.getLogger(getClass)
 
   @Test
-  def testPersistInMemory {
+  def testPersistInMemory() {
     // create a database in memory
     var db = new Database("mem:test")//;TRACE_LEVEL_SYSTEM_OUT=4")
     createTables(db)
     setProp(db,"a","1")
     setProp(db,"b","2")
-
-    db.doTransaction{
-      Connection().queryMany(asIntStringString)("SELECT * FROM prop").foreach((row)=>{
-        LOG.info(row.toString())
-      })
-    }
-
     assertTrue("1" == getProp(db,"a").getOrElse("?"))
     assertTrue("2" == getProp(db,"b").getOrElse("?"))
     db.shutdown()
@@ -34,22 +29,75 @@ class testDatabase {
       Connection().querySingle(asLong)("SELECT COUNT(*) FROM prop").getOrElse(-1)
     })
     db.shutdown()
-
   }
 
   @Test
-  def testPersistInFile {
+  def testPersistInFile() {
+    val dbname = "test"
+    val filename = dbname+".h2.db"
+    try {
+      // create a database in memory
+      var db = new Database(dbname)//;TRACE_LEVEL_SYSTEM_OUT=4")
+      createTables(db)
+      setProp(db,"a","1")
+      setProp(db,"b","2")
+      assertTrue("1" == getProp(db,"a").getOrElse("?"))
+      assertTrue("2" == getProp(db,"b").getOrElse("?"))
+      db.shutdown()
 
+      assertTrue(new File(filename).exists())
+
+      // after its closed, a new one with the same name should remember everything
+      db = new Database(dbname)
+      createTables(db)
+      assertTrue(2 == db.joinTransaction {
+        Connection().querySingle(asLong)("SELECT COUNT(*) FROM prop").getOrElse(-1)
+      })
+      assertTrue("1" == getProp(db,"a").getOrElse("?"))
+      assertTrue("2" == getProp(db,"b").getOrElse("?"))
+      db.shutdown()
+    } finally {
+      new File(filename).delete()
+    }
   }
 
   @Test
-  def testConnectionPool {
+  def testRollbackException() {
+    /*
 
-  }
+    // create a database in memory
+    var db = new Database("mem:test;TRACE_LEVEL_SYSTEM_OUT=4")
+    createTables(db)
+    setProp(db,"a","1")
+    setProp(db,"b","2")
+    assertTrue("1" == getProp(db,"a").getOrElse("?"))
+    assertTrue("2" == getProp(db,"b").getOrElse("?"))
 
-  @Test
-  def testRollbackException {
+    db.joinTransaction {
+      val i = getProp(db,"a").get
+      setProp(db,"a",i+i)
 
+      val c2 = db.getConnection()
+      try {
+        c2.executeUpdate("UPDATE prop SET v=? WHERE k=?","x","a")
+        c2.commit()
+      } catch {
+        case ex: SQLException => {
+
+          LOG.info(String.format("exception %s %s",ex.getErrorCode.toString,ex.getSQLState),ex)
+        }
+      }
+      db.returnConnection(c2)
+
+      val j = getProp(db,"a").get
+      setProp(db,"a",i+j)
+    }
+
+    val r = getProp(db,"a").getOrElse("?")
+    assertTrue(r=="111")
+
+    db.shutdown()
+    */
   }
 
 
