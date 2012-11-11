@@ -1,9 +1,17 @@
+/*
+ * Copyright (c) 2010-2012 by Ben de Waal. All Rights Reserved.
+ *
+ * This code is licensed under GPLv3. Other licenses are available directly from the author.
+ *
+ * No liability is assumed for whatever purpose, intended or unintended.
+ */
+
 package com.bronzecastle.iff.core.model
 
 import org.junit._
 import Assert._
 import com.bronzecastle.iff.core.objects.{IPersistable, IObject}
-import java.io.{ObjectInputStream, ByteArrayInputStream, ObjectOutputStream, ByteArrayOutputStream}
+import java.io.{ByteArrayInputStream, ByteArrayOutputStream}
 import org.apache.log4j.Logger
 
 @Test
@@ -45,6 +53,8 @@ trait IOpenable extends IObject {
   @Persistent var nameOfKey = "gold"
 }
 class ObjectA extends IPersistable with IBlinkable with IOpenable {
+  def index() = "ObjectA"
+
   @Persistent var a = 0L
   var b = 0L
 }

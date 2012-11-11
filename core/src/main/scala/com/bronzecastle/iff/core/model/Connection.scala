@@ -1,7 +1,15 @@
+/*
+ * Copyright (c) 2010-2012 by Ben de Waal. All Rights Reserved.
+ *
+ * This code is licensed under GPLv3. Other licenses are available directly from the author.
+ *
+ * No liability is assumed for whatever purpose, intended or unintended.
+ */
+
 package com.bronzecastle.iff.core.model
 
 import collection.mutable.{ArrayBuffer => MutableArrayBuffer}
-import java.sql.{ResultSet, SQLException}
+import java.sql.{Blob, ResultSet, SQLException}
 
 /**
  * logical connection to database
@@ -26,6 +34,7 @@ class Connection(val directConnection: java.sql.Connection) {
         case n: Int => ps.setInt(i+1,n)
         case n: Long => ps.setLong(i+1,n)
         case s: String => ps.setString(i+1,s)
+        case b: Blob => ps.setBlob(i+1,b)
       }
     }
     ps
@@ -89,5 +98,6 @@ object Connection {
     def asLong(rs: ResultSet): Long = rs.getLong(1)
     def asString(rs: ResultSet): String = rs.getString(1)
     def asIntStringString(rs: ResultSet): (Int,String,String) = (rs.getInt(1),rs.getString(2),rs.getString(3))
+    def asLongBlob(rs: ResultSet): (Long,Blob) = (rs.getLong(1),rs.getBlob(2))
   }
 }

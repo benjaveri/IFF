@@ -1,3 +1,11 @@
+/*
+ * Copyright (c) 2010-2012 by Ben de Waal. All Rights Reserved.
+ *
+ * This code is licensed under GPLv3. Other licenses are available directly from the author.
+ *
+ * No liability is assumed for whatever purpose, intended or unintended.
+ */
+
 package com.bronzecastle.iff.core.objects
 
 import com.bronzecastle.iff.core.model.Persistent
@@ -7,8 +15,12 @@ import java.util.concurrent.ConcurrentHashMap
 
 trait IPersistable {
   // persistence: row id and generation number
-  private var id = -1L
   private var gen = -1L
+  def getGenerationNumber = gen
+  def setGenerationNumber(g: Long) { gen = g }
+
+  // required instance name
+  def index(): String
 
   // serialization
   def serialize(os: OutputStream) {
@@ -53,7 +65,7 @@ object IPersistable {
     try {
       // read and marshal class
       var className = stream.readUTF()
-      if (classnameRemapper.contains(className)) className = classnameRemapper(className)
+      if (CLASS_REMAPPER.contains(className)) className = CLASS_REMAPPER.get(className)
       val clazz = Class.forName(className)
       val ob = clazz.newInstance().asInstanceOf[IPersistable]
 
@@ -86,25 +98,25 @@ object IPersistable {
   // remap class names here - this allows you to refactor your code
   //  and maintain reverse compatibility with older databases
   //
-  val classnameRemapper = new ConcurrentHashMap[String,String]()
+  val CLASS_REMAPPER = new ConcurrentHashMap[String,String]()
 
   //
   // stream tags
   //
-  val TAG_FIELD: Byte = 1
-  val TAG_END: Byte   = 2
+  protected val TAG_FIELD: Byte = 1
+  protected val TAG_END: Byte   = 2
 
   //
-  // type registry
+  // type registry - can be extended dynamically
   //
-  val SERIALIZERS = Map(
+  val SERIALIZERS = collection.mutable.Map(
     "boolean" -> ((s: DataOutputStream,f: Field,ob: Any) => { s.writeBoolean(f.getBoolean(ob)) }),
     "int" -> ((s: DataOutputStream,f: Field,ob: Any) => { s.writeInt(f.getInt(ob)) }),
     "long" -> ((s: DataOutputStream,f: Field,ob: Any) => { s.writeLong(f.getLong(ob)) }),
     "java.lang.String" -> ((s: DataOutputStream,f: Field,ob: Any) => { s.writeUTF(f.get(ob).asInstanceOf[String]) })
   )
 
-  val DESERIALIZERS = Map(
+  val DESERIALIZERS = collection.mutable.Map(
     "boolean" -> ((s: DataInputStream,f: Field,ob: Any) => { f.setBoolean(ob,s.readBoolean()) }),
     "int" -> ((s: DataInputStream,f: Field,ob: Any) => { f.setInt(ob,s.readInt()) }),
     "long" -> ((s: DataInputStream,f: Field,ob: Any) => { f.setLong(ob,s.readLong()) }),
