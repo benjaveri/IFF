@@ -8,18 +8,17 @@
 
 package com.bronzecastle.iff.core.model
 
-import com.bronzecastle.iff.core.objects.{IPersistable, IObject}
-import Connection.QueryConvertions._
-import java.io.ByteArrayOutputStream
-import javax.sql.rowset.serial.SerialBlob
+import com.bronzecastle.iff.core.objects.IPersistable
+import scala.Some
+import com.bronzecastle.iff.core.orm.{Database, Registry, SavePersistable, LoadPersistable}
 
 /**
  * master container for all world state
  */
 class Universe extends IPersistable {
-  var db: Database = null
+  index = Universe.INDEX
 
-  override def index() = Universe.INDEX
+  var db: Database = null
 
   //
   // initialization
@@ -49,20 +48,19 @@ class Universe extends IPersistable {
   }
 
   //
-  // marshal from database
+  // persistence
   //
   def getInstance(index: String): Option[IPersistable] = {
-    ORM.getInstance(db,index)
+    LoadPersistable(db,index)
   }
   def refresh(ob: IPersistable): Boolean = {
-    ORM.refresh(db,ob)
+    LoadPersistable(db,ob.index,ob) match {
+      case None => false
+      case Some(x) => true
+    }
   }
-
-  //
-  // save to database
-  //
   def persist(ob: IPersistable): Boolean = {
-    ORM.persist(db,ob)
+    SavePersistable(db,ob)
   }
 }
 
@@ -71,19 +69,11 @@ object Universe {
 
   def startup(name: String): Universe = { // use mem:name to persist universe in memory
     val db = new Database(name)
-    val U = if (ORM.createTables(db)) {
-      // does not exist
-      val U = new Universe()
-      U.init(db)
-      U.persist(U)
-      U
-    } else {
-      // exists
-      val U = ORM.getInstance(db,INDEX).asInstanceOf[Universe]
-      U.init(db)
-      U
-    }
+    Registry.createTables(db)
+    val U = LoadPersistable(db,INDEX).getOrElse(new Universe).asInstanceOf[Universe]
+    U.init(db)
     U.startup()
+    U.persist(U)
     U
   }
 }

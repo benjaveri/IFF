@@ -11,7 +11,6 @@ package com.bronzecastle.iff.core
 import model.Universe
 import objects.{IPersistable, IActor, ILocation}
 import org.junit._
-import Assert._
 
 @Test
 class LocationTest {

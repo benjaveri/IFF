@@ -6,11 +6,13 @@
  * No liability is assumed for whatever purpose, intended or unintended.
  */
 
-package com.bronzecastle.iff.core.model;
+package com.bronzecastle.iff.core.orm;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Persistent {
+    // when defined, persist to given column, else put in general store
+    String column() default "";
 }

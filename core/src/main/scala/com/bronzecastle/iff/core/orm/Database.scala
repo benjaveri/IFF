@@ -6,11 +6,12 @@
  * No liability is assumed for whatever purpose, intended or unintended.
  */
 
-package com.bronzecastle.iff.core.model
+package com.bronzecastle.iff.core.orm
 
 import java.sql.{SQLException, DriverManager}
 import collection.mutable.{HashSet => MutableHashSet}
 import org.apache.log4j.Logger
+import com.bronzecastle.iff.core.UnreachableCodeReachedException
 
 /**
  * database abstraction
@@ -144,6 +145,6 @@ class Database(val name: String) {
         returnConnection(conn)
       }
     }
-    throw new RuntimeException("Unreachable code reached!")
+    throw new UnreachableCodeReachedException()
   }
 }

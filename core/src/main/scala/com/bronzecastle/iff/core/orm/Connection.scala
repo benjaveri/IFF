@@ -6,10 +6,10 @@
  * No liability is assumed for whatever purpose, intended or unintended.
  */
 
-package com.bronzecastle.iff.core.model
+package com.bronzecastle.iff.core.orm
 
 import collection.mutable.{ArrayBuffer => MutableArrayBuffer}
-import java.sql.{Blob, ResultSet, SQLException}
+import java.sql.{Blob, ResultSet}
 
 /**
  * logical connection to database
@@ -45,7 +45,7 @@ class Connection(val directConnection: java.sql.Connection) {
     prepareStatement(stmt,args).execute()
   }
 
-  def executeQuery[T](stmt: String,args: Any*): ResultSet = {
+  def executeQuery(stmt: String,args: Any*): ResultSet = {
     prepareStatement(stmt,args).executeQuery()
   }
 

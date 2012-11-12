@@ -6,7 +6,7 @@
  * No liability is assumed for whatever purpose, intended or unintended.
  */
 
-package com.bronzecastle.iff.core.model
+package com.bronzecastle.iff.core.orm
 
 import org.junit._
 import Assert._
