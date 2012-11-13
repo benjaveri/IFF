@@ -10,6 +10,9 @@ package com.bronzecastle.iff.core.objects
 
 import com.bronzecastle.iff.core.orm.Persistent
 
+/**
+ * something to be remembered
+ */
 trait IPersistable {
   // required instance name
   @Persistent(column = "idx")
@@ -22,4 +25,9 @@ trait IPersistable {
   // persistence triggers
   def triggerAboutToPersist() {}
   def triggerJustLoaded() {}
+}
+
+object IPersistable {
+  def indexOf(ob: IPersistable): String = ob.index
+  def indexOf[T <: IPersistable](clazz: Class[T]): String = clazz.newInstance().index
 }

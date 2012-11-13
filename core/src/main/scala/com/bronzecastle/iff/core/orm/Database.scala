@@ -11,14 +11,12 @@ package com.bronzecastle.iff.core.orm
 import java.sql.{SQLException, DriverManager}
 import collection.mutable.{HashSet => MutableHashSet}
 import org.apache.log4j.Logger
-import com.bronzecastle.iff.core.UnreachableCodeReachedException
+import com.bronzecastle.iff.core.{Core, UnreachableCodeReachedException}
 
 /**
  * database abstraction
  */
 class Database(val name: String) {
-  protected val LOG = Logger.getLogger(getClass)
-
   //
   // connection pool
   //
@@ -71,7 +69,7 @@ class Database(val name: String) {
   def shutdown() {
     lock.synchronized {
       if (usePool.size > 0) {
-        LOG.warn(usePool.size+" database connections still in use!")
+        Core.LOG.warn(usePool.size+" database connections still in use!")
       }
       usePool.foreach(_.close())
       usePool.clear()
@@ -114,7 +112,7 @@ class Database(val name: String) {
           case ex: SQLException => {
             if (ex.getErrorCode == 50200) { // timeout
               // retry transaction
-              LOG.info("Transaction timeout; wont retry")
+              Core.LOG.info("Transaction timeout; wont retry")
               // TODO - for now, i believe its best to avoid these cases in my code
               //  so not going to handle it yet
               throw ex

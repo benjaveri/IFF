@@ -6,11 +6,12 @@
  * No liability is assumed for whatever purpose, intended or unintended.
  */
 
-package com.bronzecastle.iff.core.model
+package com.bronzecastle.iff.core
+package model
 
 import com.bronzecastle.iff.core.objects.IPersistable
-import scala.Some
 import com.bronzecastle.iff.core.orm.{Database, Registry, SavePersistable, LoadPersistable}
+import objects.IPersistable._
 
 /**
  * master container for all world state
@@ -21,16 +22,11 @@ class Universe extends IPersistable {
   var db: Database = null
 
   //
-  // initialization
-  //
-  def init(db: Database) {
-    this.db = db
-  }
-
-  //
   // starts up the universe
   //
-  def startup() {
+  def startup(db: Database) {
+    this.db = db
+    Universe.tls.set(this)
   }
 
   //
@@ -38,6 +34,7 @@ class Universe extends IPersistable {
   //
   def shutdown() {
     db.shutdown()
+    Universe.tls.set(null)
   }
 
   //
@@ -50,15 +47,37 @@ class Universe extends IPersistable {
   //
   // persistence
   //
-  def getInstance(index: String): Option[IPersistable] = {
+  def getInstanceOption(index: String): Option[IPersistable] = {
     LoadPersistable(db,index)
   }
+
+  def getInstance(index: String): IPersistable = {
+    LoadPersistable(db,index) match {
+      case None => throw new ObjectNotFoundException(index)
+      case Some(x) => x
+    }
+  }
+
+  def getInstanceOption[T <: IPersistable](clazz: Class[T]): Option[T] = {
+    val index = indexOf(clazz)
+    LoadPersistable(db,index).map((x)=>x.asInstanceOf[T])
+  }
+
+  def getInstance[T <: IPersistable](clazz: Class[T]): T = {
+    val index = indexOf(clazz)
+    LoadPersistable(db,index) match {
+      case None => throw new ObjectNotFoundException(index)
+      case Some(x) => x.asInstanceOf[T]
+    }
+  }
+
   def refresh(ob: IPersistable): Boolean = {
     LoadPersistable(db,ob.index,ob) match {
       case None => false
       case Some(x) => true
     }
   }
+
   def persist(ob: IPersistable): Boolean = {
     SavePersistable(db,ob)
   }
@@ -67,13 +86,19 @@ class Universe extends IPersistable {
 object Universe {
   val INDEX = "$UNIVERSE"
 
+  protected val tls = new InheritableThreadLocal[Universe]()
+
+  def apply() = tls.get()
+
   def startup(name: String): Universe = { // use mem:name to persist universe in memory
     val db = new Database(name)
     Registry.createTables(db)
     val U = LoadPersistable(db,INDEX).getOrElse(new Universe).asInstanceOf[Universe]
-    U.init(db)
-    U.startup()
+    U.startup(db)
     U.persist(U)
     U
   }
 }
+
+class ObjectNotFoundException(val index: String) extends Exception(index+" does not exist in this universe")
+

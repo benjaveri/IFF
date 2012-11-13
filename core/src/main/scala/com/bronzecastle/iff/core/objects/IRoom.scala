@@ -9,8 +9,10 @@
 package com.bronzecastle.iff.core.objects
 
 /**
- * a player or an automated character
+ * a room one can be in
+ *   rooms are root nodes when traversing places
  */
-trait IActor extends IThing {
-
+trait IRoom extends IPlace {
+  def shortDescription(): String
+  def fullDescription(): String
 }

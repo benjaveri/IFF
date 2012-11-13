@@ -6,10 +6,10 @@
  * No liability is assumed for whatever purpose, intended or unintended.
  */
 
-package com.bronzecastle.iff.core.objects
+package com.bronzecastle.iff.core
 
-/**
- * base object
- */
-trait IObject {
+import org.apache.log4j.Logger
+
+object Core {
+  val LOG = Logger.getLogger(getClass)
 }

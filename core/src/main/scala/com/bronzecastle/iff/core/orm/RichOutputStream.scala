@@ -9,6 +9,7 @@
 package com.bronzecastle.iff.core.orm
 
 import java.io.{OutputStream, DataOutputStream}
+import com.bronzecastle.iff.core.Relation
 
 class RichOutputStream(os: OutputStream) extends DataOutputStream(os) {
   // writes to stream in native format. not preserving type information in stream
@@ -18,6 +19,7 @@ class RichOutputStream(os: OutputStream) extends DataOutputStream(os) {
       case x: Int => writeInt(x)
       case x: Long => writeLong(x)
       case x: String => writeUTF(x)
+      case x: Relation => writeUTF(Relation.toString(x))
       case _ => throw new RuntimeException("Case not implemented")
     }
   }

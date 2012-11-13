@@ -9,6 +9,7 @@
 package com.bronzecastle.iff.core.orm
 
 import java.io.{InputStream, DataInputStream}
+import com.bronzecastle.iff.core.Relation
 
 class RichInputStream(is: InputStream) extends DataInputStream(is){
   def readNative(typename: String): Any = {
@@ -17,6 +18,7 @@ class RichInputStream(is: InputStream) extends DataInputStream(is){
       case "int" => readInt()
       case "long" => readLong()
       case "java.lang.String" => readUTF()
+      case "com.bronzecastle.iff.core.Relation" => Relation.fromString(readUTF())
       case _ => throw new RuntimeException("Case not implemented")
     }
   }

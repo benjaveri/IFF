@@ -16,8 +16,6 @@ import java.io.File
 
 @Test
 class DatabaseTest {
-  val LOG = Logger.getLogger(getClass)
-
   @Test
   def testPersistInMemory() {
     // create a database in memory

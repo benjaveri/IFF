@@ -11,15 +11,11 @@ package com.bronzecastle.iff.core.objects
 import com.bronzecastle.iff.core.orm.Persistent
 
 /**
- * a place characters can visit
+ * a place than can "hold" things
  */
-trait ILocation extends IObject {
-  @Persistent(column="loc") var loc = ILocation.NOWHERE
-
-  def shortDesc(): String
-  def fullDesc(): String
+trait IPlace {
 }
 
-object ILocation {
+object IPlace {
   val NOWHERE = "$NOWHERE"
 }
