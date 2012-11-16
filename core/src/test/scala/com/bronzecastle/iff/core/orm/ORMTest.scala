@@ -10,8 +10,7 @@ package com.bronzecastle.iff.core.orm
 
 import org.junit._
 import Assert._
-import com.bronzecastle.iff.core.objects.{IPersistable, IThing}
-import org.apache.log4j.Logger
+import com.bronzecastle.iff.core.objects.IPersistable
 
 @Test
 class ORMTest {
@@ -29,7 +28,7 @@ class ORMTest {
     assertTrue(SavePersistable(db,a))
     assertTrue(a.gen == 1)
 
-    val b = LoadPersistable(db,a.index).get.asInstanceOf[ThingA]
+    val b = LoadPersistable(db,a.id).get.asInstanceOf[ThingA]
     assertTrue(b.gen == 1)
     assertTrue(b.a == 456)
     assertTrue(b.b == 0) // b is not marked as persistent
@@ -46,13 +45,13 @@ class ORMTest {
     a.a = 123
     assertTrue(SavePersistable(db,a))
 
-    val b = LoadPersistable(db,a.index).get.asInstanceOf[ThingA]
+    val b = LoadPersistable(db,a.id).get.asInstanceOf[ThingA]
     b.a = 456
     assertTrue(SavePersistable(db,b))
 
     a.a = 999
     assertFalse(SavePersistable(db,a))
-    assertTrue(LoadPersistable(db,a.index,a).isDefined)
+    assertTrue(LoadPersistable(db,a.id,a).isDefined)
     assertTrue(a.a == 456)
     a.a = 999
     assertTrue(SavePersistable(db,a))

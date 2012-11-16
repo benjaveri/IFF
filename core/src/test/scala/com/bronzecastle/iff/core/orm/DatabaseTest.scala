@@ -10,7 +10,6 @@ package com.bronzecastle.iff.core.orm
 
 import org.junit._
 import Assert._
-import org.apache.log4j.Logger
 import Connection.QueryConvertions._
 import java.io.File
 

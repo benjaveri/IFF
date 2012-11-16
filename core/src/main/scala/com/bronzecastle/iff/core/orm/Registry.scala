@@ -8,10 +8,9 @@
 
 package com.bronzecastle.iff.core.orm
 
-import java.io.{DataInputStream, DataOutputStream}
-import java.lang.reflect.Field
 import com.bronzecastle.iff.core.orm.Connection.QueryConvertions._
 import com.bronzecastle.iff.core.UnreachableCodeReachedException
+import com.bronzecastle.iff.core.objects.IPersistable
 
 /**
  * central registry for orm related things
@@ -40,7 +39,7 @@ object Registry {
           |  idx VARCHAR(64) PRIMARY KEY,
           |  gen BIGINT,
           |  cls TEXT,
-          |  loc VARCHAR(64),
+          |  loc VARCHAR(64) DEFAULT NULL,
           |  state BLOB
           |)
         """.stripMargin
@@ -54,5 +53,20 @@ object Registry {
       return count == 0 // true if database is completely empty
     })
     throw new UnreachableCodeReachedException()
+  }
+
+  //
+  // lists everything
+  //
+  def listAll(db: Database): Iterator[IPersistable] = {
+    db.joinTransaction {
+      val rs = Connection().executeQuery(
+        "SELECT idx FROM objects"
+      )
+      new Iterator[IPersistable]{
+        def hasNext = rs.next()
+        def next() = LoadPersistable(db,rs.getString(1)).get
+      }
+    }
   }
 }

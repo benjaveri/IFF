@@ -9,15 +9,14 @@
 package com.bronzecastle.iff.core
 package model
 
-import com.bronzecastle.iff.core.objects.IPersistable
+import objects.{IThing, IObject, IPersistable}
 import com.bronzecastle.iff.core.orm.{Database, Registry, SavePersistable, LoadPersistable}
-import objects.IPersistable._
 
 /**
  * master container for all world state
  */
 class Universe extends IPersistable {
-  index = Universe.INDEX
+  id = Universe.ID
 
   var db: Database = null
 
@@ -47,32 +46,23 @@ class Universe extends IPersistable {
   //
   // persistence
   //
-  def getInstanceOption(index: String): Option[IPersistable] = {
-    LoadPersistable(db,index)
+  def getOption[T <: IPersistable](id: String): Option[T] = {
+    LoadPersistable(db,id).map((x)=>x.asInstanceOf[T])
   }
 
-  def getInstance(index: String): IPersistable = {
-    LoadPersistable(db,index) match {
-      case None => throw new ObjectNotFoundException(index)
-      case Some(x) => x
-    }
-  }
+  // get[Type]() -> get[Type]("Type") for the common case where one class := one object
+  def get[T <: IPersistable]()(implicit m: Manifest[T]): T = get(m.erasure.getSimpleName)
 
-  def getInstanceOption[T <: IPersistable](clazz: Class[T]): Option[T] = {
-    val index = indexOf(clazz)
-    LoadPersistable(db,index).map((x)=>x.asInstanceOf[T])
-  }
-
-  def getInstance[T <: IPersistable](clazz: Class[T]): T = {
-    val index = indexOf(clazz)
-    LoadPersistable(db,index) match {
-      case None => throw new ObjectNotFoundException(index)
+  // explicit id of type T, for example goblin#1->#5 of type goblin
+  def get[T <: IPersistable](id: String): T = {
+    LoadPersistable(db,id) match {
+      case None => throw new ObjectNotFoundException(id)
       case Some(x) => x.asInstanceOf[T]
     }
   }
 
   def refresh(ob: IPersistable): Boolean = {
-    LoadPersistable(db,ob.index,ob) match {
+    LoadPersistable(db,ob.id,ob) match {
       case None => false
       case Some(x) => true
     }
@@ -81,10 +71,23 @@ class Universe extends IPersistable {
   def persist(ob: IPersistable): Boolean = {
     SavePersistable(db,ob)
   }
+
+  // debug aid - lists everything in the universe
+  def logInventory() {
+    for (item <- Registry.listAll(db)) {
+      val sb = new StringBuilder
+      sb.append("["+item.getClass.getSimpleName+"] ")
+      item match {
+        case thing: IThing => sb.append(item.id+": loc="+thing.location)
+        case any: IObject => sb.append(item.id)
+      }
+      Core.LOG.info(sb.toString())
+    }
+  }
 }
 
 object Universe {
-  val INDEX = "$UNIVERSE"
+  val ID = "$UNIVERSE"
 
   protected val tls = new InheritableThreadLocal[Universe]()
 
@@ -93,7 +96,7 @@ object Universe {
   def startup(name: String): Universe = { // use mem:name to persist universe in memory
     val db = new Database(name)
     Registry.createTables(db)
-    val U = LoadPersistable(db,INDEX).getOrElse(new Universe).asInstanceOf[Universe]
+    val U = LoadPersistable(db,ID).getOrElse(new Universe).asInstanceOf[Universe]
     U.startup(db)
     U.persist(U)
     U

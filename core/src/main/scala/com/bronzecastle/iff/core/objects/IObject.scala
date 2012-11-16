@@ -8,13 +8,9 @@
 
 package com.bronzecastle.iff.core.objects
 
-
 /**
- * a place than can "hold" things
+ * a generic object
  */
-trait IPlace extends IObject {
-}
+class IObject {
 
-object IPlace {
-  val NOWHERE = "$NOWHERE" // we should define this place in the universe so we dont have to special case for it
 }

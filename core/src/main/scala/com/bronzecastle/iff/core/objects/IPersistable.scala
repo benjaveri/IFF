@@ -13,10 +13,10 @@ import com.bronzecastle.iff.core.orm.Persistent
 /**
  * something to be remembered
  */
-trait IPersistable {
+trait IPersistable extends IObject {
   // required instance name
   @Persistent(column = "idx")
-  var index = getClass.getSimpleName
+  var id = getClass.getSimpleName
 
   // generation number
   @Persistent(column = "gen")
@@ -28,6 +28,8 @@ trait IPersistable {
 }
 
 object IPersistable {
-  def indexOf(ob: IPersistable): String = ob.index
-  def indexOf[T <: IPersistable](clazz: Class[T]): String = clazz.newInstance().index
+  def idOf(ob: Any): String = ob match {
+    case p: IPersistable => p.id
+    case x => idOf(x.asInstanceOf[IPersistable])
+  }
 }

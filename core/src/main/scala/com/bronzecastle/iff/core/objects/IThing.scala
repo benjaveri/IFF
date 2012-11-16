@@ -9,13 +9,13 @@
 package com.bronzecastle.iff.core.objects
 
 import com.bronzecastle.iff.core.orm.Persistent
-import com.bronzecastle.iff.core.{Core, Relation}
+import com.bronzecastle.iff.core.Relation
 import com.bronzecastle.iff.core.model.Universe
 
 /**
  * a thing that can be in IPlace
  */
-trait IThing {
+trait IThing extends IObject {
   //
   // state
   //
@@ -40,11 +40,11 @@ trait IThing {
    * @return true is this is in the room, or false if not
    */
   def isInRoom(room: IPlace): Boolean = {
-    Universe().getInstanceOption(location) match {
+    Universe().getOption[IPersistable](location) match {
       case None => false
-      case Some(place) => place match {
+      case Some(inst) => inst match {
         case thing: IThing => thing.isInRoom(room)
-        case place: IPlace => place.getClass == room.getClass
+        case place: IPlace => IPersistable.idOf(place) == IPersistable.idOf(room)
         case _ => false
       }
     }

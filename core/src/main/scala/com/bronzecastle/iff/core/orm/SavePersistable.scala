@@ -67,7 +67,7 @@ object SavePersistable {
     db.joinTransaction {
       Connection().querySingleWithArgs(asLong)(
         "SELECT COUNT(*) FROM objects WHERE idx=?",
-        Seq(ob.index)
+        Seq(ob.id)
       ).map((count) => {
         if (count == 0) {
           val keys = map.keysIterator.mkString(",")

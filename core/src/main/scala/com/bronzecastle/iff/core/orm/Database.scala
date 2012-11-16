@@ -10,7 +10,6 @@ package com.bronzecastle.iff.core.orm
 
 import java.sql.{SQLException, DriverManager}
 import collection.mutable.{HashSet => MutableHashSet}
-import org.apache.log4j.Logger
 import com.bronzecastle.iff.core.{Core, UnreachableCodeReachedException}
 
 /**
