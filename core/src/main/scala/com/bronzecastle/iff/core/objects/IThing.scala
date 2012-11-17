@@ -23,9 +23,15 @@ trait IThing extends IObject {
 
   // how this thing relates to location (in, under, on, etc.)
   @Persistent var relation: Relation = Relation.In
+
   // where this thing is
   @Persistent(column="loc") var location = IPlace.NOWHERE
 
+  // this thing is visible
+  def isVisible = true
+
+  // things inside or under it is visible
+  def isTransparent = false
 
   //
   // reflection
@@ -49,11 +55,10 @@ trait IThing extends IObject {
     }
   }
 
-
   /**
    * returns a list of all parents in this IThing's hierarchy
    */
-  def getParents(): Seq[IThing] = {
+  def listParents: Seq[IThing] = {
     val list = new MutableArrayBuffer[IThing]()
 
     def r2(ob: IObject) {
@@ -73,5 +78,26 @@ trait IThing extends IObject {
     r2(this)
 
     list.toSeq
+  }
+
+  /**
+   * lists direct children
+   */
+  def listChildren: Seq[IThing] = {
+    Universe().listByLocation(IPersistable.idOf(this)).map((ob)=>ob.asInstanceOf[IThing]).toSeq
+  }
+
+  /**
+   * lists visible direct children
+   */
+  def listVisibleChildren: Seq[IThing] = {
+    if (isTransparent)
+      Universe()
+        .listByLocation(IPersistable.idOf(this))
+        .map((ob)=>ob.asInstanceOf[IThing])
+        .filter(_.isVisible)
+        .toSeq
+    else
+      Seq()
   }
 }

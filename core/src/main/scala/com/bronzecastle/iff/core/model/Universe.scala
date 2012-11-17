@@ -9,7 +9,7 @@
 package com.bronzecastle.iff.core
 package model
 
-import objects.{IThing, IObject, IPersistable}
+import objects.{IPlace, IThing, IObject, IPersistable}
 import orm._
 import scala.Some
 
@@ -27,6 +27,11 @@ class Universe extends IPersistable {
   def startup(db: Database) {
     this.db = db
     Universe.tls.set(this)
+
+    // create $NOWHERE if it does not exist
+    persist(new IPersistable with IPlace {
+      id = IPlace.NOWHERE
+    })
   }
 
   //
@@ -102,7 +107,7 @@ class Universe extends IPersistable {
    * debug aid - lists everything in the universe
    */
   def logInventory() {
-    for (item <- Registry.listAll(db)) {
+    for (item <- DAO.listAll(db)) {
       val sb = new StringBuilder
       sb.append("["+item.getClass.getSimpleName+"] ")
       item match {
@@ -112,6 +117,11 @@ class Universe extends IPersistable {
       Core.LOG.info(sb.toString())
     }
   }
+
+  /**
+   * list all objects directly related to the given location
+   */
+  def listByLocation(location: String) = DAO.listByLocation(db,location)
 }
 
 object Universe {

@@ -27,7 +27,7 @@ class Environment {
     U.persistAtomic(
       new Cell,
       new Sand,new Cache,new Key,
-      new Me,
+      new Me,new Ghost,
       new Passage,
       new Rock,new Rock,
       new Goblin,new Goblin
@@ -57,6 +57,11 @@ class Passage extends IPersistable with IRoom {
 class Sand extends IPersistable with IThing {
   def shortDescription() = "sand"
   def fullDescription() = "A heap of sand. Not particularly different from most sand you've seen."
+  location = "Cell"
+}
+
+class Ghost extends IPersistable with IActor {
+  override def isVisible = false
   location = "Cell"
 }
 

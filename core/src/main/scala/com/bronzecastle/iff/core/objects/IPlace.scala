@@ -8,11 +8,27 @@
 
 package com.bronzecastle.iff.core.objects
 
+import com.bronzecastle.iff.core.model.Universe
+
 
 /**
  * a place than can "hold" things
  */
 trait IPlace extends IObject {
+  /**
+   * lists direct children
+   */
+  def listChildren: Seq[IThing] = {
+    Universe().listByLocation(IPersistable.idOf(this)).map((ob)=>ob.asInstanceOf[IThing]).toSeq
+  }
+
+  /**
+   * lists visible direct children
+   */
+  def listVisibleChildren: Seq[IThing] = {
+    listChildren
+      .filter(_.isVisible)
+  }
 }
 
 object IPlace {

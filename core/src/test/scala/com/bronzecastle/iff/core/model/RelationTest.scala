@@ -11,6 +11,7 @@ package model
 
 import org.junit._
 import Assert._
+import objects.IPersistable
 
 @Test
 class RelationTest extends Environment {
@@ -24,13 +25,33 @@ class RelationTest extends Environment {
   }
 
   @Test
-  def testGetParents() {
+  def testListParents() {
     val key = U.get[Key]
-    val list = key.getParents()
+    val list = key.listParents
     assertTrue(list.size == 3)
     assertTrue(list(0).location == "Cache")
     assertTrue(list(1).location == "Sand")
     assertTrue(list(2).location == "Cell")
+  }
+
+  @Test
+  def testListChildren() {
+    val cell = U.get[Cell]
+    val inCell = cell.listChildren.map(IPersistable.idOf(_))
+    assertTrue(inCell.diff(Seq("Me","Ghost","Sand")).isEmpty)
+    val sand = U.get[Sand]
+    val inSand = sand.listChildren.map(IPersistable.idOf(_))
+    assertTrue(inSand.diff(Seq("Cache")).isEmpty)
+  }
+
+  @Test
+  def testListVisibleChildren() {
+    val cell = U.get[Cell]
+    val inCell = cell.listVisibleChildren.map(IPersistable.idOf(_))
+    assertTrue(inCell.diff(Seq("Me","Sand")).isEmpty)
+    val sand = U.get[Sand]
+    val inSand = sand.listVisibleChildren.map(IPersistable.idOf(_))
+    assertTrue(inSand.isEmpty)
   }
 }
 

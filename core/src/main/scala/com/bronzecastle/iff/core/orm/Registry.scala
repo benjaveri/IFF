@@ -31,7 +31,7 @@ object Registry {
   //
   // create tables (to extend, override and use ALTER TABLE after calling super)
   //
-  def createTables(db: Database): Boolean = {
+  def createTables(db: Database) {
     db.joinTransaction {
       Connection().executeStatement(
         """
@@ -47,26 +47,6 @@ object Registry {
       Connection().executeStatement(
         "CREATE INDEX IF NOT EXISTS objects_loc_index ON objects(loc)"
       )
-      // previously created databases will have at least the $UNIVERSE in it
-      Connection().querySingle(asLong)("SELECT COUNT(*) FROM objects")
-    }.foreach((count)=>{
-      return count == 0 // true if database is completely empty
-    })
-    throw new UnreachableCodeReachedException()
-  }
-
-  //
-  // lists everything
-  //
-  def listAll(db: Database): Iterator[IPersistable] = {
-    db.joinTransaction {
-      val rs = Connection().executeQuery(
-        "SELECT idx FROM objects"
-      )
-      new Iterator[IPersistable]{
-        def hasNext = rs.next()
-        def next() = LoadPersistable(db,rs.getString(1)).get
-      }
     }
   }
 }
