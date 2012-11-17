@@ -11,6 +11,7 @@ package com.bronzecastle.iff.core.objects
 import com.bronzecastle.iff.core.orm.Persistent
 import com.bronzecastle.iff.core.Relation
 import com.bronzecastle.iff.core.model.Universe
+import collection.mutable.{ArrayBuffer => MutableArrayBuffer}
 
 /**
  * a thing that can be in IPlace
@@ -31,8 +32,6 @@ trait IThing extends IObject {
   //
 
   /**
-   * isInRoom
-   *
    * Evaluates whether this IThing is directly on indirectly
    *  in the given IPlace
    *
@@ -48,5 +47,31 @@ trait IThing extends IObject {
         case _ => false
       }
     }
+  }
+
+
+  /**
+   * returns a list of all parents in this IThing's hierarchy
+   */
+  def getParents(): Seq[IThing] = {
+    val list = new MutableArrayBuffer[IThing]()
+
+    def r2(ob: IObject) {
+      ob match {
+        case thing: IThing => {
+          list += thing
+          Universe().getOption[IPersistable](thing.location) match {
+            case None => {}
+            case Some(inst) => inst match {
+              case thing: IThing => r2(thing)
+              case _ => {}
+            }
+          }
+        }
+      }
+    }
+    r2(this)
+
+    list.toSeq
   }
 }

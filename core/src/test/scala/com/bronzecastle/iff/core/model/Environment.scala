@@ -6,16 +6,16 @@
  * No liability is assumed for whatever purpose, intended or unintended.
  */
 
-package com.bronzecastle.iff
-package core
+package com.bronzecastle.iff.core.model
 
-import model.Universe
-import objects._
-import org.junit._
-import Assert._
+import com.bronzecastle.iff.core.objects.{IActor, IThing, IRoom, IPersistable}
+import com.bronzecastle.iff.core.Relation
+import org.junit.{After, Before}
 
-@Test
-class LocationTest {
+/**
+ * a simple world we use in many different tests
+ */
+class Environment {
   var U: Universe = null
 
   @Before
@@ -24,37 +24,21 @@ class LocationTest {
 
     // this seems weird - wonder if we can import them automagically -
     //  probably not so easy, consider a saved game vs new game.
-    U.persist(new Cell)
-    U.persist(new Passage)
-    U.persist(new Sand)
-    U.persist(new Cache)
-    U.persist(new Key)
-    U.persist(new Rock)
-    U.persist(new Rock)
-    U.persist(new Me)
-    U.persist(new Goblin)
-    U.persist(new Goblin)
-
-    U.logInventory()
+    U.persistAtomic(
+      new Cell,
+      new Sand,new Cache,new Key,
+      new Me,
+      new Passage,
+      new Rock,new Rock,
+      new Goblin,new Goblin
+    )
   }
 
   @After
   def shutdown() {
     U.shutdown()
+    U = null
   }
-
-  @Test
-  def test() {
-    val key = U.get[Key]
-    val cell = U.get[Cell]
-    assertTrue(key.isInRoom(cell))
-    //assertTrue(key.isVisible(cell))
-    val rock = U.get[Rock]("Rock#1")
-    assertFalse(rock.isInRoom(cell))
-    //assertFalse(rock.isVisible(cell))
-  }
-
-
 }
 
 //

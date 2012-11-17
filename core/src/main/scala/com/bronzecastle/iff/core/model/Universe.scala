@@ -10,7 +10,8 @@ package com.bronzecastle.iff.core
 package model
 
 import objects.{IThing, IObject, IPersistable}
-import com.bronzecastle.iff.core.orm.{Database, Registry, SavePersistable, LoadPersistable}
+import orm._
+import scala.Some
 
 /**
  * master container for all world state
@@ -32,8 +33,8 @@ class Universe extends IPersistable {
   // closes everything down
   //
   def shutdown() {
-    db.shutdown()
     Universe.tls.set(null)
+    db.shutdown()
   }
 
   //
@@ -68,11 +69,38 @@ class Universe extends IPersistable {
     }
   }
 
+  /**
+   * persists a single object
+   *
+   * @param ob object to save
+   * @return true on success
+   */
   def persist(ob: IPersistable): Boolean = {
-    SavePersistable(db,ob)
+    db.joinTransaction {
+      SavePersistable(db,ob)
+    }
   }
 
-  // debug aid - lists everything in the universe
+  /**
+   * persists all arguments or none at all.
+   *  affects current transaction, so use appropriately
+   *
+   * @param obs objects to persist
+   * @return true on success. on failure, the current transaction (if any) is rolled back
+   */
+  def persistAtomic(obs: IPersistable*): Boolean = {
+    db.joinTransaction {
+      for (ob <- obs) {
+        val b = SavePersistable(db,ob)
+        if (!b) { Connection().rollbackTransaction(); return false }
+      }
+    }
+    true
+  }
+
+  /**
+   * debug aid - lists everything in the universe
+   */
   def logInventory() {
     for (item <- Registry.listAll(db)) {
       val sb = new StringBuilder
@@ -98,7 +126,7 @@ object Universe {
     Registry.createTables(db)
     val U = LoadPersistable(db,ID).getOrElse(new Universe).asInstanceOf[Universe]
     U.startup(db)
-    U.persist(U)
+    U.persistAtomic(U)
     U
   }
 }
