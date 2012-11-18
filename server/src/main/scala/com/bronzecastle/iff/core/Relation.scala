@@ -35,6 +35,10 @@ object Relation extends Enumeration {
   case object On extends Relation
   case object Under extends Relation
 
+  // actor related
+  case object Carrying extends Relation
+  case object Wearing extends Relation
+
   // serialization
   def toString(s: Relation): String = {
     s.toString

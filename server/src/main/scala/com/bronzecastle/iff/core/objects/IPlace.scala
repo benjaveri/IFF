@@ -15,11 +15,19 @@ import com.bronzecastle.iff.core.model.Universe
  * a place than can "hold" things
  */
 trait IPlace extends IObject {
+  //
+  // state
+  //
+
+  // borrow id from persistable
+  require(this.isInstanceOf[IPersistable])
+  override def ID = IPersistable.idOf(this)
+
   /**
    * lists direct children
    */
   def listChildren: Seq[IThing] = {
-    Universe().listByLocation(IPersistable.idOf(this)).map((ob)=>ob.asInstanceOf[IThing]).toSeq
+    Universe().listByLocation(ID).map((ob)=>ob.asInstanceOf[IThing]).toSeq
   }
 
   /**
@@ -33,4 +41,5 @@ trait IPlace extends IObject {
 
 object IPlace {
   val NOWHERE = "$NOWHERE" // we should define this place in the universe so we dont have to special case for it
+  val nowhere = new IPersistable with IPlace { id = NOWHERE }
 }

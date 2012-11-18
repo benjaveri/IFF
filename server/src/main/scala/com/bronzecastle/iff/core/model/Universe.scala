@@ -12,6 +12,7 @@ package model
 import objects.{IPlace, IThing, IObject, IPersistable}
 import orm._
 import scala.Some
+import orm.DatabaseException.ObjectNotFoundException
 
 /**
  * master container for all world state
@@ -29,9 +30,7 @@ class Universe extends IPersistable {
     Universe.tls.set(this)
 
     // create $NOWHERE if it does not exist
-    persist(new IPersistable with IPlace {
-      id = IPlace.NOWHERE
-    })
+    persist(IPlace.nowhere)
   }
 
   //
@@ -141,5 +140,4 @@ object Universe {
   }
 }
 
-class ObjectNotFoundException(val index: String) extends Exception(index+" does not exist in this universe")
 

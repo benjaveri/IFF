@@ -8,9 +8,6 @@
 
 package com.bronzecastle.iff.core.orm
 
-import com.bronzecastle.iff.core.orm.Connection.QueryConvertions._
-import com.bronzecastle.iff.core.UnreachableCodeReachedException
-import com.bronzecastle.iff.core.objects.IPersistable
 
 /**
  * central registry for orm related things

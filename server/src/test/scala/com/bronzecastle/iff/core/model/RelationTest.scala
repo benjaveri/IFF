@@ -11,17 +11,17 @@ package model
 
 import org.junit._
 import Assert._
-import objects.IPersistable
 
 @Test
 class RelationTest extends Environment {
   @Test
-  def testIsInRoom() {
+  def testIsInPlace() {
+    U.logInventory()
     val key = U.get[Key]
     val cell = U.get[Cell]
-    assertTrue(key.isInRoom(cell))
+    assertTrue(key.isInPlace(cell))
     val rock = U.get[Rock]("Rock#1")
-    assertFalse(rock.isInRoom(cell))
+    assertFalse(rock.isInPlace(cell))
   }
 
   @Test
@@ -37,20 +37,20 @@ class RelationTest extends Environment {
   @Test
   def testListChildren() {
     val cell = U.get[Cell]
-    val inCell = cell.listChildren.map(IPersistable.idOf(_))
+    val inCell = cell.listChildren.map(_.ID)
     assertTrue(inCell.diff(Seq("Me","Ghost","Sand")).isEmpty)
     val sand = U.get[Sand]
-    val inSand = sand.listChildren.map(IPersistable.idOf(_))
+    val inSand = sand.listChildren.map(_.ID)
     assertTrue(inSand.diff(Seq("Cache")).isEmpty)
   }
 
   @Test
   def testListVisibleChildren() {
     val cell = U.get[Cell]
-    val inCell = cell.listVisibleChildren.map(IPersistable.idOf(_))
+    val inCell = cell.listVisibleChildren.map(_.ID)
     assertTrue(inCell.diff(Seq("Me","Sand")).isEmpty)
     val sand = U.get[Sand]
-    val inSand = sand.listVisibleChildren.map(IPersistable.idOf(_))
+    val inSand = sand.listVisibleChildren.map(_.ID)
     assertTrue(inSand.isEmpty)
   }
 }

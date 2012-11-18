@@ -11,6 +11,7 @@ package com.bronzecastle.iff.core.orm
 import java.sql.{SQLException, DriverManager}
 import collection.mutable.{HashSet => MutableHashSet}
 import com.bronzecastle.iff.core.{Core, UnreachableCodeReachedException}
+import com.bronzecastle.iff.core.orm.DatabaseException.UpdateFailedCanRetryException
 
 /**
  * database abstraction
@@ -110,11 +111,9 @@ class Database(val name: String) {
         } catch {
           case ex: SQLException => {
             if (ex.getErrorCode == 50200) { // timeout
-              // retry transaction
-              Core.LOG.info("Transaction timeout; wont retry")
-              // TODO - for now, i believe its best to avoid these cases in my code
-              //  so not going to handle it yet
-              throw ex
+              // can retry transaction
+              Core.LOG.info("Transaction timeout (usually due to deadlock)")
+              throw new UpdateFailedCanRetryException()
             } else {
               throw ex
             }

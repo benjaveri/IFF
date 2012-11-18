@@ -11,6 +11,6 @@ package com.bronzecastle.iff.core.objects
 /**
  * a generic object
  */
-class IObject {
-
+trait IObject {
+  def ID: String
 }

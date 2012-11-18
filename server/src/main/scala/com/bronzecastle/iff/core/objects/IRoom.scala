@@ -9,7 +9,7 @@
 package com.bronzecastle.iff.core.objects
 
 /**
- * a room one can be in
+ * a place one can be in
  *   rooms are root nodes when traversing places
  */
 trait IRoom extends IPlace {

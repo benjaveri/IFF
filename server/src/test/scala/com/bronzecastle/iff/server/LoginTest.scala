@@ -1,13 +1,15 @@
 package com.bronzecastle.iff.server
 
-import org.junit.Test
-import org.junit.Assert._
+import org.junit._
+import Assert._
 
 @Test
 class LoginTest extends WebClientEnvironment {
   @Test
   def hello() {
-    assertTrue(200 == GET("http://localhost:8080/server/index.html")._1.getStatusCode)
-    assertTrue(404 == GET("http://localhost:8080/server/notfound.html")._1.getStatusCode)
+    val t200 = GET("http://localhost:8080/server/index.html")
+    assertTrue(200 == t200._1.getStatusCode)
+    val t404 = GET("http://localhost:8080/server/notfound.html")
+    assertTrue(404 == t404._1.getStatusCode)
   }
 }

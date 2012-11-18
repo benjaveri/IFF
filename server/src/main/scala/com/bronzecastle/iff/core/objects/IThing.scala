@@ -21,6 +21,10 @@ trait IThing extends IObject {
   // state
   //
 
+  // borrow id from persistable
+  require(this.isInstanceOf[IPersistable])
+  override def ID = IPersistable.idOf(this)
+
   // how this thing relates to location (in, under, on, etc.)
   @Persistent var relation: Relation = Relation.In
 
@@ -38,18 +42,34 @@ trait IThing extends IObject {
   //
 
   /**
+   * Finds the place this thing is in
+   *
+   * @return the place if any, else IPlace.nowhere
+   */
+  def getPlace: IPlace = {
+    Universe().getOption[IPersistable](location) match {
+      case None => IPlace.nowhere
+      case Some(inst) => inst match {
+        case thing: IThing => thing.getPlace
+        case place: IPlace => place
+        case _ => IPlace.nowhere
+      }
+    }
+  }
+
+  /**
    * Evaluates whether this IThing is directly on indirectly
    *  in the given IPlace
    *
-   * @param room the IPlace of interest
-   * @return true is this is in the room, or false if not
+   * @param candidate the IPlace of interest
+   * @return true is this is in the place, or false if not
    */
-  def isInRoom(room: IPlace): Boolean = {
+  def isInPlace(candidate: IPlace): Boolean = {
     Universe().getOption[IPersistable](location) match {
       case None => false
       case Some(inst) => inst match {
-        case thing: IThing => thing.isInRoom(room)
-        case place: IPlace => IPersistable.idOf(place) == IPersistable.idOf(room)
+        case thing: IThing => thing.isInPlace(candidate)
+        case place: IPlace => candidate.ID == place.ID
         case _ => false
       }
     }
@@ -84,7 +104,7 @@ trait IThing extends IObject {
    * lists direct children
    */
   def listChildren: Seq[IThing] = {
-    Universe().listByLocation(IPersistable.idOf(this)).map((ob)=>ob.asInstanceOf[IThing]).toSeq
+    Universe().listByLocation(ID).map((ob)=>ob.asInstanceOf[IThing]).toSeq
   }
 
   /**
@@ -93,7 +113,7 @@ trait IThing extends IObject {
   def listVisibleChildren: Seq[IThing] = {
     if (isTransparent)
       Universe()
-        .listByLocation(IPersistable.idOf(this))
+        .listByLocation(ID)
         .map((ob)=>ob.asInstanceOf[IThing])
         .filter(_.isVisible)
         .toSeq

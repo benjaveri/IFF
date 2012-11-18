@@ -17,6 +17,7 @@ trait IPersistable extends IObject {
   // required instance name
   @Persistent(column = "idx")
   var id = getClass.getSimpleName
+  override def ID = id
 
   // generation number
   @Persistent(column = "gen")
