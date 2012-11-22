@@ -8,7 +8,7 @@
 
 package com.bronzecastle.iff.core.model
 
-import com.bronzecastle.iff.core.objects.{IActor, IThing, IRoom, IPersistable}
+import com.bronzecastle.iff.core.objects._
 import com.bronzecastle.iff.core.Relation
 import org.junit.{After, Before}
 
@@ -27,9 +27,10 @@ class Environment
     //  probably not so easy, consider a saved game vs new game.
     Rock.reset()
     Goblin.reset()
-    U.persistAtomic(
+    U.persist(
       new Cell,
       new Sand,new Cache,new Key,
+      new Shield,
       new Me,new Ghost,
       new Passage,
       new Rock,new Rock,
@@ -53,10 +54,20 @@ class Cell extends IPersistable with IRoom {
 }
 
 class Me extends IPersistable with IActor {
+  override def maxCarrySpace = 5
+  override def maxCarryWeight = 5
   location = "Cell"
 }
 
-class Sand extends IPersistable with IThing {
+class Shield extends IPersistable with IThing {
+  def shortDescription() = "battered,copper/shield"
+  def fullDescription() = "A small battered shield made of copper."
+  override def bulk = 1
+  override def weight = 1
+  location = "Cell"
+}
+
+class Sand extends IPersistable with IFixture {
   def shortDescription() = "sand"
   def fullDescription() = "A heap of sand. Not particularly different from most sand you've seen."
   location = "Cell"

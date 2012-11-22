@@ -37,6 +37,13 @@ trait IThing extends IObject {
   // things inside or under it is visible
   def isTransparent = false
 
+  // this thing cannot be moved
+  def isFixture = false
+
+  // weight & size
+  def weight = 0
+  def bulk = 0
+
   //
   // reflection
   //

@@ -74,29 +74,16 @@ class Universe extends IPersistable {
   }
 
   /**
-   * persists a single object
-   *
-   * @param ob object to save
-   * @return true on success
-   */
-  def persist(ob: IPersistable): Boolean = {
-    db.joinTransaction {
-      SavePersistable(db,ob)
-    }
-  }
-
-  /**
    * persists all arguments or none at all.
-   *  affects current transaction, so use appropriately
    *
    * @param obs objects to persist
-   * @return true on success. on failure, the current transaction (if any) is rolled back
+   * @return true on success. on failure, caller must roll back transaction
    */
-  def persistAtomic(obs: IPersistable*): Boolean = {
+  def persist(obs: IPersistable*): Boolean = {
     db.joinTransaction {
       for (ob <- obs) {
         val b = SavePersistable(db,ob)
-        if (!b) { Connection().rollbackTransaction(); return false }
+        if (!b) { return false }
       }
     }
     true
@@ -135,7 +122,7 @@ object Universe {
     Registry.createTables(db)
     val U = LoadPersistable(db,ID).getOrElse(new Universe).asInstanceOf[Universe]
     U.startup(db)
-    U.persistAtomic(U)
+    U.persist(U)
     U
   }
 }

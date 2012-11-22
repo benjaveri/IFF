@@ -58,6 +58,68 @@ class ORMTest {
 
     db.shutdown()
   }
+
+  /**
+   * we need to be able to update multiple ORM objects atomically
+   *  and if this fails, ensure they can all be rolled back. this is
+   *  a very common operation, e.g. see TakeAction where both the
+   *  thing taken and the actor performing the action must be updated
+   *  simultaneously
+   *
+   *  the test is currently disabled since h2 does table locks, so
+   *   the concurrent update attempt below times out due to deadlock
+   */
+  @Test
+  def testAtomicUpdate() {
+    assertTrue(true)
+    /*
+    val db = new Database("mem:test")
+    Registry.createTables(db)
+
+    // set up objects
+    val a = new ObjectA
+    a.v = 123
+    assertTrue(SavePersistable(db,a))
+    val b = new ObjectB
+    b.v = 456
+    assertTrue(SavePersistable(db,b))
+
+    // attempt an atomic update guaranteed to fail
+    a.v += 100
+    b.v -= 100
+    class RollbackException extends Exception
+    try {
+      db.doTransaction {
+        assertTrue(SavePersistable(db,a))
+        // simulate concurrent worker that updated b
+        val c2 = db.getConnection()
+        c2.executeUpdate(
+          "UPDATE objects SET gen=? WHERE idx=?",1,"ObjectB"
+        )
+        // update b will fail
+        assertFalse(SavePersistable(db,b))
+
+        // roll back
+        throw new RollbackException
+      }
+    } catch {
+      case ex: RollbackException => {
+        assertTrue(true)
+      }
+    }
+
+    // refresh
+    LoadPersistable(db,a.id,a)
+    LoadPersistable(db,b.id,b)
+
+    // ensure its like we did nothing at all
+    assertTrue(a.v==123)
+    assertTrue(b.v==456)
+
+    // done
+    db.shutdown()
+    */
+  }
 }
 
 trait ITrait1 {
@@ -73,4 +135,13 @@ trait ITrait2 {
 class ThingA extends IPersistable with ITrait1 with ITrait2 {
   @Persistent var a = 0L
   var b = 0L
+}
+
+
+class ObjectA extends IPersistable {
+  @Persistent var v = 0
+}
+
+class ObjectB extends IPersistable {
+  @Persistent var v = 0
 }
