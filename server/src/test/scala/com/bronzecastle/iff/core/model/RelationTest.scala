@@ -37,20 +37,20 @@ class RelationTest extends Environment {
   @Test
   def testListChildren() {
     val cell = U.get[Cell]
-    val inCell = cell.listChildren.map(_.ID)
-    assertTrue(inCell.diff(Seq("Me","Ghost","Sand")).isEmpty)
+    val inCell = cell.listChildren.map(_.ID).toArray
+    assertTrue(inCell.diff(Seq("Me","Ghost","Sand","Shield")).isEmpty)
     val sand = U.get[Sand]
-    val inSand = sand.listChildren.map(_.ID)
+    val inSand = sand.listChildren.map(_.ID).toArray
     assertTrue(inSand.diff(Seq("Cache")).isEmpty)
   }
 
   @Test
   def testListVisibleChildren() {
     val cell = U.get[Cell]
-    val inCell = cell.listVisibleChildren.map(_.ID)
-    assertTrue(inCell.diff(Seq("Me","Sand")).isEmpty)
+    val inCell = cell.listVisibleChildren.map(_.ID).toArray
+    assertTrue(inCell.diff(Seq("Me","Sand","Shield")).isEmpty)
     val sand = U.get[Sand]
-    val inSand = sand.listVisibleChildren.map(_.ID)
+    val inSand = sand.listVisibleChildren.map(_.ID).toArray
     assertTrue(inSand.isEmpty)
   }
 }

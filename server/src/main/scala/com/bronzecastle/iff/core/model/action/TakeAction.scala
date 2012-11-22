@@ -13,13 +13,17 @@ object TakeAction extends IAction {
       // preconditions
       //
 
-      // objects must still exist
+      // type check
       if (
         !actor.isInstanceOf[IPersistable] ||
-          !Universe().refresh(actor.asInstanceOf[IPersistable]) ||
-          !ob.isInstanceOf[IPersistable] ||
-          !ob.isInstanceOf[IThing] ||
-          !Universe().refresh(ob.asInstanceOf[IPersistable])
+        !ob.isInstanceOf[IPersistable] ||
+        !ob.isInstanceOf[IThing]
+      ) throw new ObjectTypeMismatchException
+
+      // objects must exist
+      if (
+        !Universe().refresh(actor.asInstanceOf[IPersistable]) ||
+        !Universe().refresh(ob.asInstanceOf[IPersistable])
       ) throw new ObjectDoesNotExistException
 
       // object must be accessible to actor
@@ -29,9 +33,9 @@ object TakeAction extends IAction {
 
       // object must pass mobility, weight & bulk checks
       if (thing.isFixture) throw new ObjectNotMobileException
-      val totalWeight = thing.weight + actor.totalCarryWeight
+      val totalWeight = thing.totalWeight + actor.totalCarryWeight
       if (totalWeight > actor.maxCarryWeight) throw new ObjectTooBigException
-      val totalBulk = thing.bulk + actor.totalCarrySpace
+      val totalBulk = thing.totalBulk + actor.totalCarrySpace
       if (totalBulk > actor.maxCarrySpace) throw new ObjectTooBigException
 
       //
@@ -39,8 +43,8 @@ object TakeAction extends IAction {
       //
       thing.location = actor.ID
       thing.relation = Relation.Carrying
-      actor.totalCarryWeight += thing.weight
-      actor.totalCarrySpace += thing.bulk
+      actor.totalCarryWeight += thing.totalWeight
+      actor.totalCarrySpace += thing.totalBulk
 
       //
       // persist
@@ -55,5 +59,3 @@ object TakeAction extends IAction {
     }
   }
 }
-
-

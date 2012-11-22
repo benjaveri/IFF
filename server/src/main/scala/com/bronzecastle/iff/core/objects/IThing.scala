@@ -42,7 +42,9 @@ trait IThing extends IObject {
 
   // weight & size
   def weight = 0
+  def totalWeight: Int = weight + listChildren.map(_.totalWeight).sum // currently we sum all related objects like goodies under others
   def bulk = 0
+  def totalBulk: Int = bulk + listChildren.map(_.totalBulk).sum
 
   //
   // reflection
@@ -127,4 +129,8 @@ trait IThing extends IObject {
     else
       Seq()
   }
+}
+
+object IThing {
+  val Phantom = new IPersistable with IThing
 }
