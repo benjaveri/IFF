@@ -1,13 +1,17 @@
-package com.bronzecastle.iff.core.model
+package com.bronzecastle.iff.core.model.action
 
-import action.{DropAction, TakeAction}
-import org.junit._
-import Assert._
-import com.bronzecastle.iff.core.model.ModelException.PreconditionFailedException
+import org.junit.Test
+import org.junit.Assert._
 import com.bronzecastle.iff.core.Relation
+import com.bronzecastle.iff.core.model.Environment
+import com.bronzecastle.iff.core.objects._
 
 @Test
-class ActionTest extends WorldEnvironment {
+class TakeDropActionTest
+  extends Environment (
+    new Me,new Cell,new Sand,new Key,new Shield
+  )
+{
   @Test
   def testTakeDrop1() {
     // can take shield since its visible
@@ -57,4 +61,36 @@ class ActionTest extends WorldEnvironment {
     me.relation = Relation.In
     assertTrue(U.persist(me))
   }
+}
+
+class Cell extends IPersistable with IRoom {
+  def shortDescription() = "Cell"
+  def fullDescription() = "An uncomfortable small cell somewhere underground."
+}
+
+class Me extends IPersistable with IActor {
+  override def maxCarrySpace = 5
+  override def maxCarryWeight = 5
+  location = "Cell"
+}
+
+class Shield extends IPersistable with IThing {
+  def shortDescription() = "battered,copper/shield"
+  def fullDescription() = "A small battered shield made of copper."
+  override def bulk = 1
+  override def weight = 1
+  location = "Cell"
+}
+
+class Sand extends IPersistable with IFixture {
+  def shortDescription() = "sand"
+  def fullDescription() = "A heap of sand. Not particularly different from most sand you've seen."
+  location = "Cell"
+}
+
+class Key extends IPersistable with IThing {
+  def shortDescription() = "small,tiny/key"
+  def fullDescription() = "A small key."
+  location = "Cache"
+  relation = Relation.In
 }
