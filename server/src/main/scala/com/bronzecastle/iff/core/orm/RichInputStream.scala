@@ -18,7 +18,7 @@ class RichInputStream(is: InputStream) extends DataInputStream(is){
       case "int" => readInt()
       case "long" => readLong()
       case "java.lang.String" => readUTF()
-      case "com.bronzecastle.iff.core.Relation" => Relation.fromString(readUTF())
+      case "com.bronzecastle.iff.core.Relation" => Relation.read(this)
       case _ => throw new RuntimeException("Case not implemented")
     }
   }

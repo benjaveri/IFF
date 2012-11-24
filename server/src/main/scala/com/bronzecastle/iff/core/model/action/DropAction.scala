@@ -38,15 +38,12 @@ case object DropAction extends IAction {
       //
       thing.location = actor.location
       thing.relation = actor.relation
-      actor.totalCarryWeight -= thing.totalWeight
-      actor.totalCarrySpace -= thing.totalBulk
 
       //
       // persist
       //
       if (!Universe().persist(
-        thing.asInstanceOf[IPersistable],
-        actor.asInstanceOf[IPersistable]
+        thing.asInstanceOf[IPersistable]
       )) {
         // preconditions changed while setting up, caller may retry after rolling back
         throw new UpdateFailedCanRetryException()

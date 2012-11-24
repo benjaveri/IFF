@@ -15,7 +15,6 @@ class IAction {
     throw new UnableToPerformActionException()
   }
 
-
   /**
    * relational action, like put lamp on table
    *  invoke via actor (actor.act(IAction,...)

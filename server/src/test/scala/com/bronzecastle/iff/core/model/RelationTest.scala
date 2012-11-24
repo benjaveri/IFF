@@ -13,7 +13,7 @@ import org.junit._
 import Assert._
 
 @Test
-class RelationTest extends Environment {
+class RelationTest extends WorldEnvironment {
   @Test
   def testIsInPlace() {
     U.logInventory()

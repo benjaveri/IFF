@@ -10,25 +10,26 @@ package com.bronzecastle.iff.core.objects
 
 import com.bronzecastle.iff.core.Relation
 import com.bronzecastle.iff.core.model.Universe
-import com.bronzecastle.iff.core.orm.Persistent
 
 /**
  * a player or an automated character
  */
 trait IActor extends IThing {
-  // total carry weight
-  @Persistent
-  var totalCarryWeight = 0
-
   // max weight actor can carry
   def maxCarryWeight = Int.MaxValue
 
-  // total carry size
-  @Persistent
-  var totalCarrySpace = 0
+  // total carry weight
+  def totalCarryWeight = listChildrenByRelation(Relation.Carrying)
+    .map(_.totalWeight)
+    .sum
 
   // max space available to carry
   def maxCarrySpace = Int.MaxValue
+
+  // total carry size
+  def totalCarrySpace = listChildrenByRelation(Relation.Carrying)
+    .map(_.totalBulk)
+    .sum
 
   /**
    * direct action, like take bottle or go north

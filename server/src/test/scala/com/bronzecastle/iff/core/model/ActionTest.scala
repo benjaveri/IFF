@@ -7,7 +7,7 @@ import com.bronzecastle.iff.core.model.ModelException.PreconditionFailedExceptio
 import com.bronzecastle.iff.core.Relation
 
 @Test
-class ActionTest extends Environment {
+class ActionTest extends WorldEnvironment {
   @Test
   def testTakeDrop1() {
     // can take shield since its visible
@@ -56,18 +56,5 @@ class ActionTest extends Environment {
     me.location = "Cell"
     me.relation = Relation.In
     assertTrue(U.persist(me))
-  }
-
-  //
-  // helper
-  //
-  def assertPreconditionFailed(body: =>Unit) {
-    try {
-      body // this must throw an exception, else fail
-      assertTrue(false)
-    } catch {
-      case ex: PreconditionFailedException => assertTrue(true)
-      case ex: Throwable => throw ex
-    }
   }
 }

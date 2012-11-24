@@ -15,6 +15,7 @@ import collection.mutable.{ArrayBuffer => MutableArrayBuffer}
 
 /**
  * a thing that can be in IPlace
+ *  a thing can also be a composite, containing, hiding or supporting other things
  */
 trait IThing extends IObject {
   //
@@ -40,11 +41,32 @@ trait IThing extends IObject {
   // this thing cannot be moved
   def isFixture = false
 
-  // weight & size
+  // actors can affect these relations (subclassed by IContainer, etc)
+  def supportsRelation(rel: Relation): Boolean = false
+
+  // weight
   def weight = 0
-  def totalWeight: Int = weight + listChildren.map(_.totalWeight).sum // currently we sum all related objects like goodies under others
+  def totalWeight: Int = {
+    weight + listChildrenByRelation(WEIGHT_AFFECTING_RELATIONS:_*)
+      .map(_.totalWeight)
+      .sum
+  }
+  protected val WEIGHT_AFFECTING_RELATIONS = Seq(Relation.On,Relation.In,Relation.Carrying,Relation.Wearing)
+
+  // size (assumed non-deformable, like a chest or a box)
   def bulk = 0
-  def totalBulk: Int = bulk + listChildren.map(_.totalBulk).sum
+  def totalBulk: Int = {
+    bulk + listChildrenByRelation(BULK_AFFECTING_RELATIONS:_*)
+      .map(_.totalBulk)
+      .sum
+  }
+  def maxHoldingSpace(rel: Relation) = Int.MaxValue
+  def totalHoldingBulk(rel: Relation) = {
+    listChildrenByRelation(rel)
+      .map(_.totalBulk)
+      .sum
+  }
+  protected val BULK_AFFECTING_RELATIONS = Seq(Relation.On,Relation.Carrying,Relation.Wearing)
 
   //
   // reflection
@@ -113,8 +135,23 @@ trait IThing extends IObject {
    * lists direct children
    */
   def listChildren: Seq[IThing] = {
-    Universe().listByLocation(ID).map((ob)=>ob.asInstanceOf[IThing]).toSeq
+    Universe()
+      .listByLocation(ID).map((ob)=>ob.asInstanceOf[IThing])
+      .toSeq
   }
+
+  /**
+   * lists direct children by relation
+   *  (slightly less efficient, since relation is not a column in database)
+   */
+  def listChildrenByRelation(rels: Relation*): Seq[IThing] = {
+    Universe()
+      .listByLocation(ID)
+      .map((ob)=>ob.asInstanceOf[IThing])
+      .filter((ob)=>rels.contains(ob.relation))
+      .toSeq
+  }
+
 
   /**
    * lists visible direct children
@@ -129,8 +166,4 @@ trait IThing extends IObject {
     else
       Seq()
   }
-}
-
-object IThing {
-  val Phantom = new IPersistable with IThing
 }

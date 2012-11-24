@@ -8,6 +8,7 @@ object ModelException {
   class ObjectNotAccessibleException extends PreconditionFailedException
   class ObjectNotMobileException extends PreconditionFailedException
   class ObjectTooBigException extends PreconditionFailedException
+  class RelationNotSupportedException extends PreconditionFailedException
 
   class UnableToTravelException extends PreconditionFailedException
 }

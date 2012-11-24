@@ -19,7 +19,7 @@ class RichOutputStream(os: OutputStream) extends DataOutputStream(os) {
       case x: Int => writeInt(x)
       case x: Long => writeLong(x)
       case x: String => writeUTF(x)
-      case x: Relation => writeUTF(Relation.toString(x))
+      case x: Relation => Relation.write(this,x)
       case _ => throw new RuntimeException("Case not implemented")
     }
   }
