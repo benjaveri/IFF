@@ -5,6 +5,7 @@ import Assert._
 import com.bronzecastle.iff.core.objects._
 import com.bronzecastle.iff.core.Relation
 import com.bronzecastle.iff.core.model.Environment
+import PutActionTest._
 
 @Test
 class PutActionTest
@@ -52,45 +53,46 @@ class PutActionTest
   }
 }
 
-class Clown extends IPersistable with IActor {
-  override def maxCarryWeight = 5
-  override def maxCarrySpace = 5
-}
+object PutActionTest {
+  class Clown extends IPersistable with IActor {
+    override def maxCarryWeight = 5
+    override def maxCarrySpace = 5
+  }
 
-class Table extends IPersistable with ISurface with ICover with IFixture {
-  override def weight = 100
-  override def capacityOn = 5
-  override def capacityUnder = 5
-}
+  class Table extends IPersistable with ISurface with ICover with IFixture {
+    override def weight = 100
+    override def capacityOn = 5
+    override def capacityUnder = 5
+  }
 
-class Box extends IPersistable with IContainer {
-  override def weight = 3
-  override def bulk = 3
-  override def capacityInside = 3
-}
+  class Box extends IPersistable with IContainer {
+    override def weight = 3
+    override def bulk = 3
+    override def capacityInside = 3
+  }
 
-class Remote extends IPersistable with IThing {
-  override def weight = 1
-  override def bulk = 1
-}
+  class Remote extends IPersistable with IThing {
+    override def weight = 1
+    override def bulk = 1
+  }
 
-class Candle extends IPersistable with IThing {
-  override def weight = 1
-  override def bulk = 1
-}
+  class Candle extends IPersistable with IThing {
+    override def weight = 1
+    override def bulk = 1
+  }
 
-class Cup extends IPersistable with IThing {
-  override def weight = 1
-  override def bulk = 1
-}
+  class Cup extends IPersistable with IThing {
+    override def weight = 1
+    override def bulk = 1
+  }
 
-class GoldBar extends IPersistable with IThing {
-  override def weight = 3
-  override def bulk = 1
-}
+  class GoldBar extends IPersistable with IThing {
+    override def weight = 3
+    override def bulk = 1
+  }
 
-class Balloon extends IPersistable with IThing {
-  override def weight = 1
-  override def bulk = 3
+  class Balloon extends IPersistable with IThing {
+    override def weight = 1
+    override def bulk = 3
+  }
 }
-

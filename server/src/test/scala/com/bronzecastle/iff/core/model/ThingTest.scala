@@ -4,6 +4,7 @@ import org.junit._
 import Assert._
 import com.bronzecastle.iff.core.objects._
 import com.bronzecastle.iff.core.Relation
+import ThingTest._
 
 @Test
 class ThingTest extends Environment {
@@ -25,26 +26,26 @@ class ThingTest extends Environment {
   }
 }
 
-class A extends IPersistable with IDeformableContainer {
-  override def weight = 100
-  override def bulk = 10
-  location = IPlace.NOWHERE
-}
+object ThingTest {
+  class A extends IPersistable with IDeformableContainer {
+    override def weight = 100
+    override def bulk = 10
+    location = IPlace.NOWHERE
+  }
 
-class B extends IPersistable with IContainer {
-  override def weight = 66
-  override def bulk = 6
-  location = "A"
-  relation = Relation.In
-}
+  class B extends IPersistable with IContainer {
+    override def weight = 66
+    override def bulk = 6
+    location = "A"
+    relation = Relation.In
+  }
 
-class C extends IPersistable with IThing {
-  override def weight = 33
-  override def bulk = 3
-  location = "B"
-  relation = Relation.In
-}
+  class C extends IPersistable with IThing {
+    override def weight = 33
+    override def bulk = 3
+    location = "B"
+    relation = Relation.In
+  }
 
-class Bag extends IPersistable with IDeformableContainer {
-
+  class Bag extends IPersistable with IDeformableContainer
 }

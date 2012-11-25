@@ -9,7 +9,7 @@
 package com.bronzecastle.iff.core.objects
 
 import com.bronzecastle.iff.core.model.Universe
-
+import com.bronzecastle.iff.core.Relation
 
 /**
  * a place than can "hold" things
@@ -23,6 +23,12 @@ trait IPlace extends IObject {
   require(this.isInstanceOf[IPersistable])
   override def ID = IPersistable.idOf(this)
 
+  // exits
+  def exits: PartialFunction[Relation,String] = Map.empty
+
+  //
+  // methods
+  //
   /**
    * lists direct children
    */

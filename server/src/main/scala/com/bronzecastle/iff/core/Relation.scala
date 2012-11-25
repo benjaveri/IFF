@@ -60,3 +60,20 @@ object Relation {
     Carrying,Wearing
   ).map((ob) => {ob.ord -> ob}).toMap
 }
+
+object Direction {
+  val North = Relation.North
+  val NorthEast = Relation.NorthEast
+  val East = Relation.East
+  val SouthEast = Relation.SouthEast
+  val South = Relation.South
+  val SouthWest = Relation.SouthWest
+  val West = Relation.West
+  val NorthWest = Relation.NorthWest
+  val Up = Relation.Up
+  val Down = Relation.Down
+  val In = Relation.In
+  val Out = Relation.Out
+  val Enter = Relation.Enter
+  val Leave = Relation.Leave
+}

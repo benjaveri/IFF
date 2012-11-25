@@ -9,8 +9,7 @@
 package com.bronzecastle.iff.core.objects
 
 /**
- * a place one can be in
- *   rooms are root nodes when traversing places
+ * a place with a description
  */
 trait IRoom extends IPlace {
   def shortDescription(): String

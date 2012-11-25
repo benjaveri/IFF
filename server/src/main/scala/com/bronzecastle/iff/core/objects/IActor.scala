@@ -10,6 +10,8 @@ package com.bronzecastle.iff.core.objects
 
 import com.bronzecastle.iff.core.Relation
 import com.bronzecastle.iff.core.model.Universe
+import com.bronzecastle.iff.core.Relation.Direction
+import com.bronzecastle.iff.core.model.ModelException.UnableToTravelException
 
 /**
  * a player or an automated character
@@ -32,7 +34,7 @@ trait IActor extends IThing {
     .sum
 
   /**
-   * direct action, like take bottle or go north
+   * direct action, like take bottle
    */
   def act(action: IAction,ob: IObject) {
     action.act(this,ob)
@@ -44,6 +46,14 @@ trait IActor extends IThing {
   def act(action: IAction,ob1: IObject,rel: Relation,ob2: IObject) {
     action.act(this,ob1,rel,ob2)
   }
+
+  /**
+   * travel action, like go north or enter dungeon (expressed as 'go enter')
+   */
+  def travel(action: IAction,dir: Direction) {
+    action.travel(this,dir)
+  }
+
 
   /**
    * checks if the object is accessible to this actor
