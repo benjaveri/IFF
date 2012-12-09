@@ -17,7 +17,7 @@ import collection.mutable.{ArrayBuffer => MutableArrayBuffer}
  * a thing that can be in IPlace
  *  a thing can also be a composite, containing, hiding or supporting other things
  */
-trait IThing extends IObject {
+trait IThing extends IObject with IVocalThing {
   //
   // state
   //
@@ -151,7 +151,6 @@ trait IThing extends IObject {
       .filter((ob)=>rels.contains(ob.relation))
       .toSeq
   }
-
 
   /**
    * lists visible direct children

@@ -13,6 +13,7 @@ import objects.{IPlace, IThing, IObject, IPersistable}
 import orm._
 import scala.Some
 import orm.DatabaseException.ObjectNotFoundException
+import nlp.{NLP, NounCollection, VerbCollection}
 
 /**
  * master container for all world state
@@ -21,6 +22,7 @@ class Universe extends IPersistable {
   id = Universe.ID
 
   var db: Database = null
+  val nlp = new NLP
 
   //
   // starts up the universe
@@ -44,8 +46,12 @@ class Universe extends IPersistable {
   //
   // bring new objects into existence
   //
-  def register(objects: IPersistable*) {
+  def register(objects: IObject*) {
+    // save to database, if persistable
+    persist(objects.filter(_.isInstanceOf[IPersistable]).map(_.asInstanceOf[IPersistable]):_*)
 
+    // register vocabulary
+    nlp.register(objects:_*)
   }
 
   //

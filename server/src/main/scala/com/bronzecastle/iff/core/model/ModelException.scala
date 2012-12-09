@@ -13,4 +13,6 @@ object ModelException {
     class UnableToTravelException extends PreconditionFailedException
       class BadDestinationException extends UnableToTravelException
       class NoExitException extends UnableToTravelException
+
+  class DuplicateWordException extends Exception
 }

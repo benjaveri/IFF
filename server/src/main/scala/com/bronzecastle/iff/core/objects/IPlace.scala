@@ -14,7 +14,7 @@ import com.bronzecastle.iff.core.Relation
 /**
  * a place than can "hold" things
  */
-trait IPlace extends IObject {
+trait IPlace extends IObject with IVocalThing {
   //
   // state
   //
