@@ -32,4 +32,6 @@ class NounCollection {
       vocab.contains(key)
     }
   }
+
+  def list = vocab.keys
 }

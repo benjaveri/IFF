@@ -54,7 +54,6 @@ trait IActor extends IThing {
     action.travel(this,dir)
   }
 
-
   /**
    * checks if the object is accessible to this actor
    */

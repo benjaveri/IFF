@@ -11,6 +11,8 @@ import com.bronzecastle.iff.core.Relation
  * actor travel
  */
 object GoAction extends IAction {
+  override def verb: Option[String] = Some("go")
+
   override protected[core] def travel(actor: IActor,dir: Direction) {
     Universe().db.joinTransaction {
       //

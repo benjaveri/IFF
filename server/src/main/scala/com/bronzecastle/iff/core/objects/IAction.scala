@@ -7,7 +7,9 @@ import com.bronzecastle.iff.core.Relation.Direction
 /**
  * superclass for all verbs
  */
-trait IAction extends IVocalAction {
+trait IAction extends IObject with IVocalAction {
+  override def ID = getClass.getSimpleName
+
   /**
    * direct action, like take bottle
    *  invoke via actor (actor.act(IAction,...)

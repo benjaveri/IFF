@@ -8,6 +8,7 @@
 
 package com.bronzecastle.iff.core
 
+import objects.IObject
 import orm.{ RichInputStream, RichOutputStream}
 import collection.mutable.{HashMap => MutableHashMap}
 
@@ -50,7 +51,10 @@ object Relation {
     ORD_TO_REL(ris.readInt())
   }
 
-  // unfortunately we need to list all serializable relations
+  // gets all relations (used by NLP for example)
+  def all() = ORD_TO_REL.values
+
+  // we need to list all serializable relations
   private val ORD_TO_REL: Map[Int,Relation] = List(
     North,NorthEast,East,SouthEast,South,SouthWest,West,NorthWest,
     Up,Down,

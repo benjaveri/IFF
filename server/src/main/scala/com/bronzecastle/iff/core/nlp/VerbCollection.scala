@@ -22,4 +22,5 @@ class VerbCollection {
     }
   }
 
+  def list = vocab.keys
 }

@@ -6,6 +6,8 @@ import com.bronzecastle.iff.core.model.ModelException._
 import com.bronzecastle.iff.core.orm.DatabaseException.UpdateFailedCanRetryException
 
 case object DropAction extends IAction {
+  override def verb: Option[String] = Some("drop")
+
   override protected[core] def act(actor: IActor,ob: IObject) {
     Universe().db.joinTransaction {
       //

@@ -9,6 +9,7 @@
 package com.bronzecastle.iff.core
 package model
 
+import action.{DropAction, TakeAction, PutAction, GoAction}
 import objects.{IPlace, IThing, IObject, IPersistable}
 import orm._
 import scala.Some
@@ -33,6 +34,14 @@ class Universe extends IPersistable {
 
     // create $NOWHERE if it does not exist
     persist(IPlace.nowhere)
+
+    // initialize vocabulary for verbs
+    register(
+      DropAction,
+      GoAction,
+      PutAction,
+      TakeAction
+    )
   }
 
   //

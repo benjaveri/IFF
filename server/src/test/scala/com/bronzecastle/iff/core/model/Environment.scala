@@ -11,7 +11,7 @@ class Environment(objects: IPersistable*) {
   @Before
   def startup() {
     U = Universe.startup("mem:test")
-    U.persist(objects:_*)
+    U.register(objects:_*)
   }
 
   @After

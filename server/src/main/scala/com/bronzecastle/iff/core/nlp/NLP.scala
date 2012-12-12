@@ -7,6 +7,11 @@ class NLP {
   val verbs = new VerbCollection
   val nouns = new NounCollection
 
+  /**
+   * registers vocabulary for things, places and actions
+   *
+   * @param objects a list of IObjects to register
+   */
   def register(objects: IObject*) {
     objects.foreach((ob)=>{
       ob match {
@@ -34,5 +39,10 @@ class NLP {
         }
       }
     })
+  }
+
+
+  def parse(s: String): Grammar.ParseResult[List[Grammar.Phrase]] = {
+    Grammar.parse(this,s)
   }
 }

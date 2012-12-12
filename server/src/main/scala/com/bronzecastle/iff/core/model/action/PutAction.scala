@@ -7,6 +7,8 @@ import com.bronzecastle.iff.core.model.Universe
 import com.bronzecastle.iff.core.orm.DatabaseException.UpdateFailedCanRetryException
 
 case object PutAction extends IAction {
+  override def verb: Option[String] = Some("put")
+
   override protected[core] def act(actor: IActor,ob1: IObject,rel: Relation,ob2: IObject) {
     Universe().db.joinTransaction {
       //
