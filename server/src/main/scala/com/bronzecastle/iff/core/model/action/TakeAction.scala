@@ -36,9 +36,9 @@ object TakeAction extends IAction {
       // object must pass mobility, weight & bulk checks
       if (thing.isFixture) throw new ObjectNotMobileException
       val totalWeight = thing.totalWeight + actor.totalCarryWeight
-      if (totalWeight > actor.maxCarryWeight) throw new ObjectTooBigException
+      if (totalWeight > actor.maxCarryWeight) throw new NotEnoughStrengthException
       val totalBulk = thing.totalBulk + actor.totalCarrySpace
-      if (totalBulk > actor.maxCarrySpace) throw new ObjectTooBigException
+      if (totalBulk > actor.maxCarrySpace) throw new NotEnoughSpaceException
 
       //
       // perform action

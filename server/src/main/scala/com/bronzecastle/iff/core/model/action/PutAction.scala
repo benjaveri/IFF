@@ -42,12 +42,12 @@ case object PutAction extends IAction {
       // object1 must be mobile and actor must be able to lift it
       if (thing1.isFixture) throw new ObjectNotMobileException
       val totalWeight = thing1.totalWeight + actor.totalCarryWeight
-      if (totalWeight > actor.maxCarryWeight) throw new ObjectTooBigException
+      if (totalWeight > actor.maxCarryWeight) throw new NotEnoughStrengthException
 
       // object2 must be a container that supports given relation
       if (!thing2.supportsRelation(rel)) throw new RelationNotSupportedException
       val totalBulk = thing2.totalHoldingBulk(rel) + thing1.totalBulk
-      if (totalBulk > thing2.maxHoldingSpace(rel)) throw new ObjectTooBigException
+      if (totalBulk > thing2.maxHoldingSpace(rel)) throw new NotEnoughSpaceException
 
       //
       // perform action
