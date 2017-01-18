@@ -31,6 +31,9 @@ class NLP {
             nouns ++= words.map((w)=>(w -> place))
           }
         }
+        case portal: IPortal => {
+          /* unknown */
+        }
         case action: IAction => {
           for (verb <- action.verb) {
             if (!verbs.addUnique(verb -> action))
